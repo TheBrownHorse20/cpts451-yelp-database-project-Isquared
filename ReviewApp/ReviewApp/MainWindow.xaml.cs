@@ -85,6 +85,7 @@ namespace ReviewApp
             }
 
             this.cityBox.ItemsSource = subCities;
+            this.busBox.ItemsSource = null;
         }
 
         private void OnCityClick(object sender, RoutedEventArgs e)
