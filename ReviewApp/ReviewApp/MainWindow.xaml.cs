@@ -12,6 +12,18 @@ using System.Collections.ObjectModel;
 
 namespace ReviewApp
 {
+    public class City
+    {
+        public string Name { get; set; }
+        public string State { get; set; }
+
+        public City(string name, string state)
+        {
+            this.Name = name;
+            this.State = state;
+        }
+    }
+
     public class Business
     {
         public string Name { get; set; }
@@ -33,9 +45,9 @@ namespace ReviewApp
             "WA"
         };
 
-        public ObservableCollection<string> Cities { get; } = new ObservableCollection<string>()
+        public ObservableCollection<City> Cities { get; } = new ObservableCollection<City>()
         {
-            "Lake Stevens"
+            new City("Lake Stevens", "WA")
         };
 
         public ObservableCollection<Business> Businesses { get; } = new ObservableCollection<Business>()
@@ -53,6 +65,8 @@ namespace ReviewApp
         {
             // Populate Businesses box (busBox) with corresponding businesses
             var selectedItem = this.cityBox.SelectedItem;
+
+            this.busBox.ItemsSource = Businesses;
         }
     }
 }
