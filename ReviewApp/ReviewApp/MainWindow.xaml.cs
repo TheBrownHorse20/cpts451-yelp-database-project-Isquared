@@ -42,17 +42,20 @@ namespace ReviewApp
     {
         public ObservableCollection<string> States { get; } = new ObservableCollection<string>()
         {
-            "WA"
+            "WA",
+            "NE"
         };
 
         public ObservableCollection<City> Cities { get; } = new ObservableCollection<City>()
         {
-            new City("Lake Stevens", "WA")
+            new City("Lake Stevens", "WA"),
+            new City("Las Vegas", "NE")
         };
 
         public ObservableCollection<Business> Businesses { get; } = new ObservableCollection<Business>()
         {
-            new Business("Rice Up", "Lake Stevens", "WA")
+            new Business("Rice Up", "Lake Stevens", "WA"),
+            new Business("Tom's Pizzaria", "Las Vegas", "NE")
         };
 
         public MainWindow()
@@ -61,12 +64,53 @@ namespace ReviewApp
             this.DataContext = this;
         }
 
+        private void OnStateClick(object sender, RoutedEventArgs e)
+        {
+            // Populate cityBox with corresponding cities
+            string? selectedState = this.stateBox.SelectedItem.ToString();   // string containing selected state's abbreviation
+
+            if (selectedState == null)
+            {
+                return;
+            }
+
+            ObservableCollection<City> subCities = new ObservableCollection<City>();
+
+            foreach (var city in this.Cities)
+            {
+                if (city.State == selectedState)
+                {
+                    subCities.Add(city);
+                }
+            }
+
+            this.cityBox.ItemsSource = subCities;
+        }
+
         private void OnCityClick(object sender, RoutedEventArgs e)
         {
             // Populate Businesses box (busBox) with corresponding businesses
-            var selectedItem = this.cityBox.SelectedItem;
+            City selectedItem = (City)this.cityBox.SelectedItem;
 
-            this.busBox.ItemsSource = Businesses;
+            if (selectedItem == null)
+            {
+                return;
+            }
+
+            if (selectedItem is City)
+            {
+                ObservableCollection<Business> subBus = new ObservableCollection<Business>();
+
+                foreach (var business in this.Businesses)
+                {
+                    if (business.City == selectedItem.Name)
+                    {
+                        subBus.Add(business);
+                    }
+                }
+
+                this.busBox.ItemsSource = subBus;
+            }
         }
     }
 }

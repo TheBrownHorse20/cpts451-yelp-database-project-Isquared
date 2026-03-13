@@ -20,12 +20,12 @@
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,4,0,0" VerticalAlignment="Center">
                 <TextBlock FontSize="18" VerticalAlignment="Center" Margin="0,0,12,0">State</TextBlock>
-                <ComboBox Name="stateBox" ItemsSource="{Binding States}" Width="188" Margin="12,3,0,0"/>
+                <ComboBox Name="stateBox" ItemsSource="{Binding States}" Width="188" Margin="12,3,0,0" SelectionChanged="OnStateClick"/>
             </StackPanel>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,10,0,0" VerticalAlignment="Top">
                 <TextBlock FontSize="18"><Run Text="City"/></TextBlock>
-                <ListBox x:Name="cityBox" ItemsSource="{Binding Cities}" Width="186" Margin="35,3,0,0" Height="244" SelectionChanged="OnCityClick">
+                <ListBox x:Name="cityBox" Width="186" Margin="35,3,0,0" Height="244" SelectionChanged="OnCityClick">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Name}"/>
@@ -44,7 +44,7 @@
             <TextBlock Grid.Row="0" FontSize="20" Margin="10,0,0,8">Businesses</TextBlock>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,4,0,0" VerticalAlignment="Center">
-                <DataGrid Name="busBox" Width="260" Margin="30,0,0,0" Height="293" CanUserResizeColumns="True"/>
+                <DataGrid Name="busBox" Width="260" Margin="30,0,0,0" Height="293" CanUserResizeColumns="True" ColumnWidth="*"/>
             </StackPanel>
         </Grid>
     </Grid>
