@@ -9,8 +9,13 @@ CREATE DATABASE milestone1db;
 
 \c milestone1db
 
-CREATE TABLE business(name TEXT, city TEXT, state TEXT);
+CREATE TABLE business (
+	name VARCHAR(100),
+	state CHAR(2),
+	city VARCHAR(50),
+	PRIMARY KEY (name,state,city)
+)
 
 --Run the following command in psql to import the CSV file
 --Just replace the <path>/milestone1DB.csv portion to include the actual path in you machine :)
-\copy business (name, state, city) FROM '<path>/milestone1DB.csv' DELIMITER ',' CSV;
+copy business (name, state, city) FROM '<path>/milestone1DB.csv' DELIMITER ',' CSV;
