@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using Npgsql;
 
 namespace ReviewApp
 {
@@ -49,7 +50,7 @@ namespace ReviewApp
         public ObservableCollection<City> Cities { get; } = new ObservableCollection<City>()
         {
             new City("Lake Stevens", "WA"),
-            new City("Las Vegas", "NE")
+            new City("Las Vegas", "NV")
         };
 
         public ObservableCollection<Business> Businesses { get; } = new ObservableCollection<Business>()
@@ -58,10 +59,34 @@ namespace ReviewApp
             new Business("Tom's Pizzaria", "Las Vegas", "NE")
         };
 
+        string postGresString = "Host=localhost; Username=postgres; Password=pugs; Database = milestone1db";
+
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = this;
+            AddStates();
+        }
+
+        public void AddStates()
+        {
+            using (var conn = new NpgsqlConnection(postGresString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "SELECT distinct state FROM business ORDER BY state;";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            States.Add(reader.GetString(0));
+                        }
+                    }
+                }
+                conn.Close();
+            }
         }
 
         private void OnStateClick(object sender, RoutedEventArgs e)
