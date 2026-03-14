@@ -41,11 +41,7 @@ namespace ReviewApp
 
     public partial class MainWindow : Window
     {
-        public ObservableCollection<string> States { get; } = new ObservableCollection<string>()
-        {
-            "WA",
-            "NE"
-        };
+        public ObservableCollection<string> States { get; } = new ObservableCollection<string>();
 
         public ObservableCollection<City> Cities { get; } = new ObservableCollection<City>()
         {
@@ -56,7 +52,7 @@ namespace ReviewApp
         public ObservableCollection<Business> Businesses { get; } = new ObservableCollection<Business>()
         {
             new Business("Rice Up", "Lake Stevens", "WA"),
-            new Business("Tom's Pizzaria", "Las Vegas", "NE")
+            new Business("Tom's Pizzaria", "Las Vegas", "NV")
         };
 
         string postGresString = "Host=localhost; Username=postgres; Password=pugs; Database = milestone1db";
@@ -91,26 +87,59 @@ namespace ReviewApp
 
         private void OnStateClick(object sender, RoutedEventArgs e)
         {
-            // Populate cityBox with corresponding cities
-            string? selectedState = this.stateBox.SelectedItem.ToString();   // string containing selected state's abbreviation
-
-            if (selectedState == null)
+            this.cityBox.ItemsSource = null; // Clear the city box
+            this.busBox.ItemsSource = null;  // Clear the business box
+            
+            if (this.stateBox.SelectedIndex < 0)
             {
                 return;
             }
 
+            string? selectedState = this.stateBox.SelectedItem.ToString();
+
+            // Populate cityBox with distinct cities from the database for the selected state
             ObservableCollection<City> subCities = new ObservableCollection<City>();
 
-            foreach (var city in this.Cities)
+            using (var conn = new NpgsqlConnection(postGresString))
             {
-                if (city.State == selectedState)
+                conn.Open();
+                using (var cmd = new NpgsqlCommand())
                 {
-                    subCities.Add(city);
+                    cmd.Connection = conn;
+                    cmd.CommandText = "SELECT DISTINCT city, state FROM business WHERE state = @state ORDER BY city;";
+                    cmd.Parameters.AddWithValue("@state", selectedState);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            subCities.Add(new City(reader.GetString(0), reader.GetString(1)));
+                        }
+                    }
                 }
+                conn.Close();
             }
 
             this.cityBox.ItemsSource = subCities;
-            this.busBox.ItemsSource = null;
+
+            // Also populate businesses based on the selected state
+            using (var conn = new NpgsqlConnection(postGresString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "SELECT name, city, state FROM business WHERE state = @state;";
+                    cmd.Parameters.AddWithValue("@state", selectedState);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Businesses.Add(new Business(reader.GetString(0), reader.GetString(1), reader.GetString(2)));
+                        }
+                    }
+                }
+                conn.Close();
+            }
         }
 
         private void OnCityClick(object sender, RoutedEventArgs e)
